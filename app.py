@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 
+
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 stocks = [
     {'id': 1,
@@ -25,10 +27,13 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route('/stocks/getall', methods=['GET'])
+@app.route('/stocks/getall')
 def get_all_stocks():
-    return jsonify(stocks)
+    response = jsonify(stocks)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
     app.run()
+#host='0.0.0.0', port=5555
