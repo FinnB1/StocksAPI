@@ -1,26 +1,12 @@
-from flask import Flask, jsonify
-
+from flask import Flask, jsonify, request
+import json
 
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-stocks = [
-    {'id': 1,
-     'name': 'Banana',
-     'abbrev': 'BANA'},
-    {'id': 2,
-     'name': 'General Development',
-     'abbrev': 'GD'},
-    {'id': 3,
-     'name': 'Citizen & Sons',
-     'abbrev': 'CNS'},
-    {'id': 4,
-     'name': 'Vista plc',
-     'abbrev': 'VSTA'},
-    {'id': 5,
-     'name': 'Kent',
-     'abbrev': 'KENT'},
-]
+file = open('./data/stocks.json', 'r')
+data = json.load(file)
+
 
 @app.route('/')
 def hello_world():
@@ -29,11 +15,35 @@ def hello_world():
 
 @app.route('/stocks/getall')
 def get_all_stocks():
-    response = jsonify(stocks)
+    response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
+@app.route('/stocks/get')
+def get_stock():
+    if 'id' in request.args:
+        id = int(request.args['id'])
+    else:
+        return get_all_stocks()
+
+    for stock in data:
+        if stock['id'] == id:
+            return jsonify(stock)
+
+
+@app.route('/stocks/value')
+def get_stock_value():
+    if 'id' in request.args:
+        id = int(request.args['id'])
+    else:
+        return "argument required"
+
+    for stock in data:
+        if stock['id'] == id:
+            return str(stock['value'])
+
+
 if __name__ == '__main__':
     app.run()
-#host='0.0.0.0', port=5555
+# host='0.0.0.0', port=5555
