@@ -4,9 +4,10 @@ import json
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-file = open('./data/stocks.json', 'r')
-data = json.load(file)
-
+def get_data(): # get data every time you request so it's updated
+    file = open('./data/stocks.json', 'r')
+    data = json.load(file)
+    return data
 
 @app.route('/')
 def hello_world():
@@ -15,7 +16,7 @@ def hello_world():
 
 @app.route('/stocks/getall')
 def get_all_stocks():
-    response = jsonify(data)
+    response = jsonify(get_data())
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
@@ -27,7 +28,7 @@ def get_stock():
     else:
         return get_all_stocks()
 
-    for stock in data:
+    for stock in get_data():
         if stock['id'] == id:
             return jsonify(stock)
 
@@ -39,7 +40,7 @@ def get_stock_value():
     else:
         return "argument required"
 
-    for stock in data:
+    for stock in get_data():
         if stock['id'] == id:
             return str(stock['value'])
 
