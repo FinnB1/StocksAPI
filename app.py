@@ -4,10 +4,12 @@ import json
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+
 def get_data(): # get data every time you request so it's updated
     file = open('./data/stocks.json', 'r')
     data = json.load(file)
     return data
+
 
 @app.route('/')
 def hello_world():

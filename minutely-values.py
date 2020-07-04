@@ -66,15 +66,20 @@ live_stock_prices = []
 
 def update_live_prices():
     live_stock_prices = []
+    change_in_prices = []
     for stockID in range(50):
         live_stock_prices.append(all_minutely_values_for_day[stockID][current_minute])
+        change_in_prices.append(round(all_minutely_values_for_day[stockID][current_minute] - current_day_prices[stockID], 2))
+
     print('minute ' + str(current_minute), live_stock_prices)
+    print(change_in_prices)
 
     file = open('./data/stocks.json', 'r')
     data = json.load(file)
     file.close()
     for stock in range(50):
         data[stock]['value'] = live_stock_prices[stock]
+        data[stock]['change'] = change_in_prices[stock]
 
     file = open('./data/stocks.json', 'w')
     json.dump(data, file)
@@ -83,5 +88,5 @@ def update_live_prices():
 
 while True:
     update_live_prices()
-    time.sleep(60)
+    time.sleep(3)
     current_minute += 1
