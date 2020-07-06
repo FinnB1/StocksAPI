@@ -91,7 +91,7 @@ def register():
             jsonObject.append(data)
             with open('./data/user.json', mode='w') as f:
                 f.write(json.dumps(jsonObject, indent=1))
-        response = jsonify("piss")
+        response = jsonify("Success")
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
