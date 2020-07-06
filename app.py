@@ -20,7 +20,7 @@ def get_new_user_id():
     if os.path.isfile('./data/user.json'):
         with open('./data/user.json') as f:
             data = json.load(f)
-            return data[len(data)-1][0]['userID'] + 1
+            return data[len(data) - 1][0]['userID'] + 1
     else:
         return 0
 
@@ -96,6 +96,31 @@ def register():
         return response
 
 
+@app.route('/login', methods=['POST', 'OPTIONS'])
+def login():
+    if request.method == "OPTIONS":
+        return _build_cors_prelight_response()
+    elif request.method == "POST":
+        if 'username' not in request.json or 'password' not in request.json:
+            return 'login failed'
+
+        username = request.json['username']
+        password = request.json['password']
+        if os.path.isfile('./data/user.json'):
+            with open('./data/user.json') as f:
+                data = json.load(f)
+                for user in data:
+                    print(user[0]['username'])
+                    if user[0]['username'] == username or user[0]['email'] == username:
+                        if user[0]['password'] == password:
+                            return "login successful"
+                        else:
+                            return "invalid password"
+                return "invalid credentials"
+        else:
+            return "invalid credentials"
+
+
 def _build_cors_prelight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -105,5 +130,5 @@ def _build_cors_prelight_response():
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=5000, debug=True)
 #
