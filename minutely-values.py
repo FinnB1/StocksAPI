@@ -85,7 +85,7 @@ def update_live_prices():
         data[stock]['change'] = change_in_prices[stock]
 
     file = open('./data/stocks.json', 'w')
-    json.dump(data, file)
+    file.write(json.dumps(data, indent=1))
     file.close()
 
 
@@ -102,7 +102,7 @@ def update_historical():
         data[stock]['historical'] = historical_prices[stock]
 
     file = open('./data/stocks.json', 'w')
-    json.dump(data, file)
+    file.write(json.dumps(data, indent=1))
     file.close()
 
 def update_minutely():
@@ -114,7 +114,7 @@ def update_minutely():
         data[stock]['minutely'] = all_minutely_values_for_day[stock]
 
     file = open('./data/stocks.json', 'w')
-    json.dump(data, file)
+    file.write(json.dumps(data, indent=1))
     file.close()
 
 
