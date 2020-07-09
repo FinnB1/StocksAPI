@@ -3,6 +3,8 @@ import os
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 import json
+import uuid
+import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -101,8 +103,17 @@ def login():
     if request.method == "OPTIONS":
         return _build_cors_prelight_response()
     elif request.method == "POST":
+        if 'sessionID' in request.json:
+            sessionID = request.json['sessionID']
+            if os.path.isfile('./data/user.json'):
+                with open('./data/user.json') as f:
+                    data = json.load(f)
+                    for user in data:
+                        if user[0]['sessionID'] == sessionID and datetime.datetime.now() < datetime.datetime.strptime(user[0]['sessionExpirationDate'], '%d/%m/%y %H:%M:%S'):
+                            return str(sessionID), 200
+
         if 'username' not in request.json or 'password' not in request.json:
-            return 'login failed'
+            return 'login failed', 400
 
         username = request.json['username']
         password = request.json['password']
@@ -113,12 +124,19 @@ def login():
                     print(user[0]['username'])
                     if user[0]['username'] == username or user[0]['email'] == username:
                         if user[0]['password'] == password:
-                            return "login successful"
+                            sessionID = uuid.uuid4()
+                            sessionExpirationDate = datetime.datetime.now()
+                            sessionExpirationDate += datetime.timedelta(days=1)
+                            user[0]['sessionID'] = str(sessionID)
+                            user[0]['sessionExpirationDate'] = datetime.datetime.strftime(sessionExpirationDate,'%d/%m/%y %H:%M:%S')
+                            with open('./data/user.json', mode='w') as fw:
+                                fw.write(json.dumps(data, indent=1))
+                            return str(sessionID), 200
                         else:
-                            return "invalid password"
-                return "invalid credentials"
+                            return "invalid password", 400
+                return "invalid credentials", 400
         else:
-            return "invalid credentials"
+            return "invalid credentials", 400
 
 
 def _build_cors_prelight_response():
